@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>个人记账 v1.2 使用手册</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --panel:#ffffff; --text:#1f2329; --text-2:#5c6370; --text-3:#8a919e;
+    --line:#e5e7eb; --accent:#2f6fed; --accent-soft:#eef3ff;
+    --warn:#b26a00; --warn-bg:#fff7e6; --ok:#1f7a45; --ok-bg:#eefaf2;
+    --radius:10px; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font:15px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code,kbd{font-family:var(--mono);font-size:.9em;background:#eef1f6;padding:1px 5px;border-radius:4px}
+  .layout{display:flex;max-width:1200px;margin:0 auto;gap:28px;padding:0 20px 80px}
+  /* 侧栏目录 */
+  aside{position:sticky;top:0;align-self:flex-start;width:250px;flex:0 0 250px;
+    max-height:100vh;overflow:auto;padding:28px 0 40px}
+  aside .brand{font-weight:700;font-size:16px;margin-bottom:4px}
+  aside .ver{color:var(--text-3);font-size:12px;margin-bottom:18px}
+  nav a{display:block;color:var(--text-2);font-size:13.5px;padding:5px 10px;border-radius:6px;
+    border-left:2px solid transparent;margin-bottom:1px}
+  nav a:hover{background:#eef1f6;color:var(--text);text-decoration:none}
+  nav a.active{background:var(--accent-soft);color:var(--accent);border-left-color:var(--accent);font-weight:600}
+  nav .group{font-size:11px;letter-spacing:.08em;color:var(--text-3);margin:16px 0 6px;padding-left:10px}
+  /* 正文 */
+  main{flex:1;min-width:0;padding-top:28px}
+  header.hero{background:linear-gradient(135deg,#2f6fed,#5b8cff);color:#fff;border-radius:14px;
+    padding:28px 30px;margin-bottom:26px}
+  header.hero h1{margin:0 0 8px;font-size:26px;letter-spacing:.5px}
+  header.hero p{margin:0;opacity:.92;font-size:14px}
+  header.hero .tags{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+  header.hero .tags span{background:rgba(255,255,255,.18);padding:3px 10px;border-radius:20px;font-size:12px}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px 30px;margin-bottom:20px;scroll-margin-top:16px}
+  section h2{margin:0 0 6px;font-size:20px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+  section h2 .no{color:var(--accent);margin-right:8px;font-variant-numeric:tabular-nums}
+  section h3{margin:26px 0 8px;font-size:16px}
+  section h3:first-of-type{margin-top:18px}
+  section h4{margin:18px 0 6px;font-size:14px;color:var(--text-2)}
+  p{margin:8px 0}
+  ul,ol{margin:8px 0 8px 22px;padding:0}
+  li{margin:4px 0}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:#f2f5f9;font-weight:600;color:var(--text-2)}
+  tbody tr:nth-child(even){background:#fafbfc}
+  .note,.tip,.warn{border-radius:8px;padding:12px 14px;margin:12px 0;font-size:14px}
+  .note{background:#f4f6fa;border-left:3px solid #9aa4b2}
+  .tip{background:var(--ok-bg);border-left:3px solid var(--ok)}
+  .warn{background:var(--warn-bg);border-left:3px solid var(--warn)}
+  .note b,.tip b,.warn b{display:block;margin-bottom:2px}
+  .steps{counter-reset:s;list-style:none;margin-left:0}
+  .steps>li{counter-increment:s;position:relative;padding-left:34px;margin:10px 0}
+  .steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:22px;height:22px;
+    border-radius:50%;background:var(--accent);color:#fff;font-size:12px;line-height:22px;text-align:center}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:12px 0}
+  .card{border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:#fbfcfe}
+  .card b{display:block;margin-bottom:2px}
+  .card span{color:var(--text-2);font-size:13px}
+  .kbdrow{display:flex;gap:14px;flex-wrap:wrap}
+  .pill{display:inline-block;background:var(--accent-soft);color:var(--accent);border-radius:20px;
+    padding:1px 10px;font-size:12px;margin-right:6px}
+  .muted{color:var(--text-3);font-size:13px}
+  footer{color:var(--text-3);font-size:12.5px;text-align:center;padding:10px 0 0}
+  .print-bar{display:flex;gap:10px;justify-content:flex-end;margin-bottom:14px}
+  .btn{display:inline-block;border:1px solid var(--line);background:#fff;border-radius:8px;
+    padding:6px 14px;font-size:13px;color:var(--text-2);cursor:pointer}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  @media (max-width:960px){
+    .layout{display:block}
+    aside{position:static;width:auto;max-height:none;padding:20px 0 0}
+    nav{columns:2;column-gap:16px}
+    nav .group{break-after:avoid}
+    section{padding:20px 18px}
+  }
+  @media print{
+    aside,.print-bar{display:none}
+    body{background:#fff}
+    section{break-inside:avoid;border:none;padding:0 0 18px}
+    .layout{display:block;max-width:none;padding:0}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <div class="brand">个人记账 v1.2</div>
+    <div class="ver">使用操作手册 · 2026-11</div>
+    <nav id="toc">
+      <div class="group">入门</div>
+      <a href="#install">1. 安装与启动</a>
+      <a href="#firstrun">2. 首次使用</a>
+      <a href="#ui">3. 界面导览</a>
+      <div class="group">记账</div>
+      <a href="#quick">4. 快速记账</a>
+      <a href="#full">5. 完整记账</a>
+      <a href="#transfer">6. 转账与调整</a>
+      <a href="#frozen">7. 冻结区规则</a>
+      <div class="group">导入（重点）</div>
+      <a href="#import">8. 导入旧账本</a>
+      <a href="#mapping">9. 列映射与校验</a>
+      <a href="#deferfreeze">10. 导入后确认冻结</a>
+      <a href="#csv">11. 微信/支付宝 CSV</a>
+      <a href="#ocr">12. 截图识别</a>
+      <div class="group">管理</div>
+      <a href="#accounts">13. 账户管理</a>
+      <a href="#master">14. 分类/标签/商户</a>
+      <a href="#settings">15. 设置项说明</a>
+      <a href="#report">16. 统计与报表</a>
+      <a href="#backup">17. 备份与恢复</a>
+      <div class="group">其他</div>
+      <a href="#data">18. 数据存放与迁移</a>
+      <a href="#faq">19. 常见问题</a>
+      <a href="#limits">20. 已知限制</a>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="print-bar"><button class="btn" onclick="window.print()">打印 / 另存为 PDF</button></div>
+
+    <header class="hero">
+      <h1>个人记账 v1.2 使用手册</h1>
+      <p>桌面独立窗口、无需浏览器；支持 Excel / CSV 旧账本导入、按秒或按日显示时间、导入数据「确认后才冻结」。</p>
+      <div class="tags"><span>桌面版</span><span>本地数据</span><span>Excel/CSV 导入</span><span>延迟冻结</span></div>
+    </header>
+
+    <section id="install">
+      <h2><span class="no">1</span>安装与启动</h2>
+      <h3>1.1 安装</h3>
+      <ol class="steps">
+        <li>双击 <code>记账v1.2-安装包.exe</code>。</li>
+        <li>选择安装位置（默认 <code>%LOCALAPPDATA%\Programs\记账v1.2</code>，不需要管理员权限）。</li>
+        <li>按需勾选「创建桌面快捷方式」「创建开始菜单快捷方式」「安装后立即启动」，点「安装」。</li>
+        <li>安装完成后，桌面 / 开始菜单出现「个人记账 v1.2」，双击即可使用。</li>
+      </ol>
+      <div class="warn"><b>Windows 可能提示「未知发布者」</b>
+        安装包未做数字签名，首次运行会出现 SmartScreen 蓝屏提示：点「更多信息」→「仍要运行」即可，属正常现象。
+      </div>
+      <h3>1.2 三种启动方式</h3>
+      <table>
+        <thead><tr><th>方式</th><th>说明</th><th>适用场景</th></tr></thead>
+        <tbody>
+          <tr><td>桌面 / 开始菜单「个人记账 v1.2」</td><td>打开独立窗口（推荐）</td><td>日常记账</td></tr>
+          <tr><td>安装目录下 <code>ledger-desktop.exe</code></td><td>同上，效果一致</td><td>便携使用</td></tr>
+          <tr><td><code>ledger.exe</code></td><td>以浏览器方式打开（默认 <code>http://127.0.0.1:8770</code>）</td><td>排查问题 / 多屏对照</td></tr>
+        </tbody>
+      </table>
+      <div class="tip"><b>单实例</b>
+        重复双击不会开出第二个窗口，而是把已开的窗口切到前台。v1.1 与 v1.2 可以同时运行，互不干扰。
+      </div>
+      <h3>1.3 卸载</h3>
+      <p>「设置 → 应用 → 个人记账 v1.2 → 卸载」，或开始菜单「个人记账 v1.2 → 卸载」。</p>
+      <div class="note"><b>卸载默认保留账本数据</b>
+        账本存在数据目录（见第 18 章），卸载只删程序。要连数据一起删，需在卸载界面勾选「同时删除用户数据」。
+      </div>
+    </section>
+
+    <section id="firstrun">
+      <h2><span class="no">2</span>首次使用</h2>
+      <p>第一次启动会自动完成三件事：初始化账本、生成访问令牌、创建默认账户。</p>
+      <h3>2.1 只有一个「总账户」</h3>
+      <p>v1.2 起账户模型收敛为单账户：<b>总账户</b>。适合不区分银行卡/支付宝/微信的用户，导入历史账本时所有记录都归到它名下。</p>
+      <ul>
+        <li>如果你确实要区分多张卡，可在「设置 → 账户」新增账户，之后记账时可选。</li>
+        <li><b>内部转账</b>需要至少两个账户；只有一个账户时该选项卡置灰并提示（避免"自己转给自己"）。</li>
+      </ul>
+      <h3>2.2 桌面版自动登录</h3>
+      <p>桌面版首次启动会自动注入本机令牌，<b>打开即进入首页</b>，无需手动粘贴 64 位令牌。浏览器方式（<code>ledger.exe</code>）首次需要登录，令牌打印在启动窗口或日志里。</p>
+    </section>
+
+    <section id="ui">
+      <h2><span class="no">3</span>界面导览</h2>
+      <div class="grid">
+        <div class="card"><b>首页 / 仪表盘</b><span>本月收支、余额走势、分类排行、高额消费、最近交易</span></div>
+        <div class="card"><b>明细</b><span>全部交易，支持筛选、搜索、编辑、删除、回收站</span></div>
+        <div class="card"><b>导入</b><span>Excel / CSV 账本导入、微信/支付宝 CSV、截图识别</span></div>
+        <div class="card"><b>报表</b><span>按月/年、按分类的多维统计</span></div>
+        <div class="card"><b>设置</b><span>账户、分类、标签、商户、账本、规则、系统、备份</span></div>
+      </div>
+      <p class="muted">侧边栏底部会显示当前版本号（如「个人记账 v1.2.0」），可用它确认自己在用哪个版本。</p>
+    </section>
+
+    <section id="quick">
+      <h2><span class="no">4</span>快速记账</h2>
+      <p>首页或明细页点「记一笔」，默认进入<b>快速模式</b>：只填金额 + 分类即可保存，适合日常高频记录。</p>
+      <ol class="steps">
+        <li>选择支出 / 收入 / 转账。</li>
+        <li>输入金额（支持 <code>12.5</code>、<code>￥12.50</code>，自动保留两位小数）。</li>
+        <li>选分类（常用分类可拖到前面）。</li>
+        <li>可选：时间、账户、标签、备注。</li>
+        <li>点「保存」。</li>
+      </ol>
+    </section>
+
+    <section id="full">
+      <h2><span class="no">5</span>完整记账</h2>
+      <p>快速模式里点「完整表单」，可填写全部字段：时间（受「时间显示」精度影响）、账户、分类、标签、商户、备注、<b>物品明细</b>。</p>
+      <h3>5.1 物品明细</h3>
+      <p>一笔消费包含多件物品时，可逐行填写：物品名称、原价、实付、折扣（自动计算）、折扣缘由，并用 ↑↓ 调整顺序。</p>
+      <div class="tip"><b>v1.2 修复</b>
+        明细表曾出现右侧列超出弹窗的问题（窄窗口下尤为明显）。现已改为：表格宽度自适应弹窗，空间不足时<b>表格内部横向滚动</b>，不再撑破弹窗。
+      </div>
+      <h3>5.2 金额与方向</h3>
+      <ul>
+        <li>支出填正数，系统按类型记账；不要用负数表示支出。</li>
+        <li>收入请在收入类型下录入，分类建议用「收入」类。</li>
+        <li>转账会同时生成转出与转入两条分录，两边金额一致。</li>
+      </ul>
+    </section>
+
+    <section id="transfer">
+      <h2><span class="no">6</span>转账与调整分录</h2>
+      <h3>6.1 内部转账</h3>
+      <p>在同一账本内、两个不同账户之间转移资金。选择转出账户、转入账户、金额、时间即可。</p>
+      <div class="warn"><b>只有一个账户时不可用</b>
+        转出与转入不能是同一账户；请先在「设置 → 账户」新增第二个账户。
+      </div>
+      <h3>6.2 调整分录</h3>
+      <p>当一笔历史记录已冻结（只读），而你发现金额错了、分类错了，不需要解冻，用「调整」补一笔差额即可，原始记录保持不变，便于追溯。</p>
+      <ul>
+        <li>在明细里找到该笔 → 点「调整」→ 填写调整金额与原因。</li>
+        <li>调整分录会以独立记录出现在同一天，报表按合计口径自动平衡。</li>
+      </ul>
+    </section>
+
+    <section id="frozen">
+      <h2><span class="no">7</span>冻结区规则</h2>
+      <p>超过「冻结天数」（默认 30 天，可在设置中改 10–365）的记录会进入冻结区，<b>只读</b>，防止误改历史。</p>
+      <table>
+        <thead><tr><th>状态</th><th>界面表现</th><th>能否编辑</th></tr></thead>
+        <tbody>
+          <tr><td>正常（近期）</td><td>无标记</td><td>可编辑、可删除</td></tr>
+          <tr><td>已冻结</td><td>行首橙色竖条 + 「冻结」徽标</td><td>不可编辑，需用「调整」</td></tr>
+          <tr><td><b>待确认冻结</b>（导入的历史数据）</td><td>蓝灰虚线「待确认冻结」标签，余额列显示 <code>—</code></td><td><b>可编辑、可删除</b>，确认后才锁定</td></tr>
+        </tbody>
+      </table>
+      <div class="tip"><b>为什么有「待确认冻结」</b>
+        导入几年前的老账本时，你多半需要先核对、改错。v1.2 会把这些记录先留在可编辑状态，等你点「确认冻结」后才真正锁定。
+      </div>
+    </section>
+
+    <section id="import">
+      <h2><span class="no">8</span>导入旧账本（Excel / CSV）</h2>
+      <p>入口：左侧「导入」→ 默认标签页「<b>Excel / CSV 账本导入</b>」。</p>
+      <h3>8.1 支持与不支持</h3>
+      <table>
+        <thead><tr><th>格式</th><th>支持</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>.xlsx</code> / <code>.xlsm</code></td><td>✅</td><td>推荐；一个文件可有多张工作表</td></tr>
+          <tr><td><code>.csv</code></td><td>✅</td><td>UTF-8 / UTF-8 BOM / GBK 自动识别</td></tr>
+          <tr><td><code>.txt</code>（表格型）</td><td>✅</td><td>按 CSV 处理</td></tr>
+          <tr><td><code>.xls</code>（Excel 97-2003）</td><td>❌</td><td>请先用 Excel / WPS「另存为 .xlsx」</td></tr>
+        </tbody>
+      </table>
+      <h3>8.2 五步流程</h3>
+      <ol class="steps">
+        <li><b>选文件</b>：可一次拖入多个文件；<code>.xls</code> 会在此步被拦下并提示另存。</li>
+        <li><b>选表单</b>：同一文件内的多张工作表会全部列出，自己勾选要导入的（可多选）。汇总表/透视表会被标注「疑似汇总表，建议不导入」。</li>
+        <li><b>列映射</b>：为每张表指定「哪一列是日期、金额、分类、账户、标签、备注、方向」。系统会自动识别，识别不准时手动改即可；可点「应用到其他表」批量套用。</li>
+        <li><b>预览</b>：显示前 200 行、错误行原因、将自动新建的分类/标签、同日时间分布样例，并选择<b>冻结策略</b>（见第 10 章）。</li>
+        <li><b>提交</b>：显示成功导入条数、重复跳过、失败条数；可跳转查看新记录。</li>
+      </ol>
+      <h3>8.3 多文件 / 多表单</h3>
+      <ul>
+        <li>一次导入多个文件：各文件的表单一并出现在第 2 步，按需勾选。</li>
+        <li>同一文件多张表：可只导「明细」不导「统计」，避免重复计账。</li>
+        <li>不同文件可设置不同的列映射。</li>
+      </ul>
+      <h3>8.4 分类与标签自动创建</h3>
+      <p>源表里的分类/标签在软件中不存在时，会自动创建（挂在一级分类下），无需手工预建。</p>
+      <div class="note"><b>近义分类不会自动合并</b>
+        例如「其他」与「其它」会作为两个独立分类保留，保证与原始账本一致；如需合并请到「设置 → 分类」手动处理。
+      </div>
+    </section>
+
+    <section id="mapping">
+      <h2><span class="no">9</span>列映射与校验</h2>
+      <h3>9.1 必填与可选</h3>
+      <table>
+        <thead><tr><th>字段</th><th>是否必填</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>日期</td><td><b>必填</b></td><td>支持 <code>2024-01-05</code>、<code>2024/1/5</code>、<code>2024年1月5日</code>、Excel 日期序列号</td></tr>
+          <tr><td>金额</td><td><b>必填</b></td><td>支持 <code>¥1,234.56</code>、<code>(123.45)</code> 负数写法</td></tr>
+          <tr><td>分类</td><td>可选</td><td>缺失时可用默认分类</td></tr>
+          <tr><td>账户</td><td>可选</td><td>缺失统一归「总账户」</td></tr>
+          <tr><td>标签 / 备注 / 商户</td><td>可选</td><td>备注常被用作「消费项目」</td></tr>
+          <tr><td>收支方向</td><td>可选</td><td>无此列时按「表默认方向」判定，或分类为「收入」视为收入</td></tr>
+        </tbody>
+      </table>
+      <h3>9.2 只有日期没有时间怎么办</h3>
+      <p>旧账本通常只记到日。导入时系统会<b>把同一天的记录按原始行顺序，平均分布到这一天 24 小时内</b>，保证时间不重复、顺序不乱；单条记录默认落在 12:00:00。</p>
+      <div class="note"><b>这些分布出来的时间是"占位"</b>
+        它们只用于排序与展示，界面会给这类记录加小圆点提示「时分秒由系统按当日分布」，不会被当成你精确录入的时间。
+      </div>
+      <h3>9.3 失败与重试</h3>
+      <p>预览页会用红/黄/橙标记问题行：红色=无法解析（缺日期/金额非法）、黄色=疑似重复、橙色=落进冻结区。修正映射后可直接回上一步重试，已选文件与映射不会丢。</p>
+    </section>
+
+    <section id="deferfreeze">
+      <h2><span class="no">10</span>导入后确认冻结（v1.2 新规则）</h2>
+      <p>导入的历史数据默认<b>不会立刻锁定</b>，而是标记为「待确认冻结」，方便你核对、改错。</p>
+      <h3>10.1 导入时选择策略</h3>
+      <table>
+        <thead><tr><th>选项</th><th>效果</th><th>适合</th></tr></thead>
+        <tbody>
+          <tr><td><b>先让我核对，确认后再冻结</b>（默认）</td><td>超过冻结天数的记录保持可编辑</td><td>首次导入老账本</td></tr>
+          <tr><td>导入后立即冻结</td><td>等同旧版行为，历史记录直接只读</td><td>数据源可信、不需要核对</td></tr>
+        </tbody>
+      </table>
+      <h3>10.2 三个确认入口</h3>
+      <ol class="steps">
+        <li><b>导入结果页</b>：显示「N 笔历史数据待确认冻结」，点「全部确认冻结」一次锁定整批。</li>
+        <li><b>明细列表</b>：工具栏「待确认冻结 (N)」可筛选出全部待确认记录，核对后批量确认。</li>
+        <li><b>详情抽屉</b>：单笔点「确认此笔」，适合逐条校对。</li>
+      </ol>
+      <h3>10.3 确认前后数字不变</h3>
+      <p>确认只是把记录从"可编辑"切到"只读"，<b>总余额、收支统计、报表口径都不会变化</b>。确认后该行标签消失、余额列恢复显示，再编辑会提示使用「调整分录」。</p>
+      <div class="tip"><b>建议节奏</b>
+        先按分类/月份抽查几笔 → 修正明显错误（金额、分类） → 再整批确认。确认后仍可改，只是要走调整分录。
+      </div>
+    </section>
+
+    <section id="csv">
+      <h2><span class="no">11</span>微信 / 支付宝账单 CSV</h2>
+      <p>「导入」→「CSV 导入」标签页，专用于微信支付、支付宝导出的官方账单文件，字段已内置适配，只需选择文件与账户即可，无需手工映射。</p>
+      <ul>
+        <li>微信账单通常在「我 → 服务 → 钱包 → 账单 → 常见问题 → 下载账单」获取。</li>
+        <li>支付宝在「我的 → 账单 → 右上角 → 开具交易流水证明」获取。</li>
+        <li>这两种账单带交易号，重复导入会自动识别并跳过。</li>
+      </ul>
+    </section>
+
+    <section id="ocr">
+      <h2><span class="no">12</span>截图识别（OCR）</h2>
+      <p>「导入」→「截图识别」，上传账单截图，系统尝试识别金额、商户、时间并生成待确认草稿。</p>
+      <div class="warn"><b>需要 OCR 服务</b>
+        OCR 依赖可选的 Python 识别服务；未启动时该功能不可用，不影响其他功能。识别结果务必人工核对后再保存。
+      </div>
+    </section>
+
+    <section id="accounts">
+      <h2><span class="no">13</span>账户管理</h2>
+      <h3>13.1 合并为总账户</h3>
+      <p>「设置 → 账户」顶部可把多个账户合并到「总账户」：勾选源账户 → 输入 <code>MERGE</code> 确认 → 系统先自动备份，再合并并全量重算。</p>
+      <div class="warn"><b>合并不可逆</b>
+        合并后无法再按原账户查看历史余额（备份里仍有）。确认页会展示每个账户合并前的余额，便于事后查证。
+      </div>
+      <h3>13.2 新增账户</h3>
+      <p>「设置 → 账户 → 新增」，填写名称、类型、初始余额。若需要内部转账，至少要有两个账户。</p>
+      <h3>13.3 初始余额</h3>
+      <p>初始余额代表"开始记账那一刻"该账户里已有的钱，不参与收支统计，只影响余额曲线起点。</p>
+    </section>
+
+    <section id="master">
+      <h2><span class="no">14</span>分类 / 标签 / 商户 / 账本 / 规则</h2>
+      <table>
+        <thead><tr><th>对象</th><th>用途</th><th>要点</th></tr></thead>
+        <tbody>
+          <tr><td>分类</td><td>支出/收入归类，支持两级</td><td>导入时可自动创建；近义分类不会自动合并</td></tr>
+          <tr><td>标签</td><td>跨分类的横向标记（如"报销""旅行"）</td><td>一笔可多个标签</td></tr>
+          <tr><td>商户</td><td>常去的店/平台</td><td>支持按关键词自动匹配</td></tr>
+          <tr><td>账本</td><td>区分不同用途的账（日常/生意）</td><td>默认「日常账本」</td></tr>
+          <tr><td>规则</td><td>按备注关键词自动归类</td><td>如含"地铁"自动归「交通」</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="settings">
+      <h2><span class="no">15</span>设置项说明</h2>
+      <table>
+        <thead><tr><th>设置</th><th>位置</th><th>作用</th></tr></thead>
+        <tbody>
+          <tr><td><b>时间显示</b></td><td>设置 → 系统（第一项）</td><td><code>年月日时分秒</code> / <code>年月日</code> 切换。即时生效，仅影响展示，不改已存数据；下方有「效果预览」</td></tr>
+          <tr><td>冻结天数</td><td>设置 → 系统</td><td>10–365 天，超过则进入冻结区（只读）</td></tr>
+          <tr><td>高额消费阈值</td><td>设置 → 系统</td><td>仪表盘「高额消费」的判定线</td></tr>
+          <tr><td>默认账户 / 默认支出分类</td><td>设置 → 系统</td><td>新建交易时的预填值</td></tr>
+          <tr><td>深色模式</td><td>设置 → 系统</td><td>界面主题切换</td></tr>
+          <tr><td>快捷记账模板</td><td>设置 → 系统</td><td>常用金额+分类一键套用</td></tr>
+          <tr><td>备份</td><td>设置 → 备份</td><td>手动备份、下载、恢复</td></tr>
+        </tbody>
+      </table>
+      <div class="tip"><b>时间显示怎么用</b>
+        日常看趋势选「年月日」（更清爽）；核对具体时间、对比多笔同日消费时选「年月日时分秒」。
+        导入的日期型记录始终按「年月日」显示，避免把系统分布的时刻误当成真实时间。
+      </div>
+    </section>
+
+    <section id="report">
+      <h2><span class="no">16</span>统计与报表</h2>
+      <ul>
+        <li><b>首页仪表盘</b>：本月收入/支出/结余、余额走势、分类排行、高额消费、最近交易。</li>
+        <li><b>报表页</b>：按月份/年份汇总，可按分类下钻；时间范围支持预设与自定义。</li>
+        <li>统计口径按「本地日期」聚合，不受时间显示精度影响：切成「年月日」也不会让本月合计变化。</li>
+        <li>冻结区与待确认冻结的记录<b>都计入统计</b>。</li>
+      </ul>
+    </section>
+
+    <section id="backup">
+      <h2><span class="no">17</span>备份与恢复</h2>
+      <ol class="steps">
+        <li>「设置 → 备份 → 立即备份」生成一个备份包（默认在数据目录 <code>backups/</code> 下）。</li>
+        <li>可下载到本地或网盘长期保存。</li>
+        <li>恢复：选择备份文件 → 确认 → 系统会先备份当前数据，再覆盖恢复。</li>
+      </ol>
+      <div class="note"><b>重要操作前会自动备份</b>
+        账户合并、库结构升级（如 v1.1 → v1.2）都会先自动备份，备份文件保留在 <code>backups/</code> 下，可随时回退。
+      </div>
+    </section>
+
+    <section id="data">
+      <h2><span class="no">18</span>数据存放与迁移</h2>
+      <h3>18.1 数据目录</h3>
+      <table>
+        <thead><tr><th>内容</th><th>路径</th></tr></thead>
+        <tbody>
+          <tr><td>账本数据库</td><td><code>%LOCALAPPDATA%\个人记账\data\ledger.db</code></td></tr>
+          <tr><td>备份</td><td><code>…\data\backups\</code></td></tr>
+          <tr><td>日志</td><td><code>…\data\logs\</code></td></tr>
+          <tr><td>截图 / OCR 结果</td><td><code>…\data\screenshots\</code>、<code>…\data\ocr-results\</code></td></tr>
+          <tr><td>界面缓存</td><td><code>…\data\web-assets\</code>、<code>…\data\webview2\</code>（可删，不影响账本）</td></tr>
+        </tbody>
+      </table>
+      <h3>18.2 换电脑 / 迁移</h3>
+      <ol class="steps">
+        <li>在旧电脑「设置 → 备份」做一次备份，或直接复制 <code>data\ledger.db</code>。</li>
+        <li>新电脑安装 v1.2，先启动一次并完全退出。</li>
+        <li>把备份恢复（推荐），或用 <code>ledger.db</code> 覆盖新电脑同名文件。</li>
+      </ol>
+      <div class="warn"><b>覆盖前先关闭程序</b>
+        数据库运行时被占用，直接覆盖可能失败或损坏。请确认任务栏/任务管理器里没有 <code>ledger-desktop.exe</code>。
+      </div>
+      <h3>18.3 从 v1.1 升级</h3>
+      <p>v1.2 直接复用同一数据目录，安装后打开即可看到原有账本；首次启动会自动升级数据库结构（先备份），并把多账户合并为「总账户」。</p>
+    </section>
+
+    <section id="faq">
+      <h2><span class="no">19</span>常见问题</h2>
+      <h3>Q1：打开后界面还是旧样子，没有账本导入？</h3>
+      <p>先确认窗口标题是「个人记账 v1.2」、侧边栏底部版本是 1.2.0。若是旧版本，说明启动的是旧程序；如果是 1.2 但界面没变，清理界面缓存后重开：</p>
+      <ul>
+        <li>关闭程序，删除 <code>%LOCALAPPDATA%\个人记账\data\webview2</code> 目录，再启动；</li>
+        <li>或用命令行加参数启动一次：<code>ledger-desktop.exe --reset-ui-cache</code>（只清界面缓存，不动账本）。</li>
+      </ul>
+      <h3>Q2：导入后金额合计和原表对不上？</h3>
+      <ul>
+        <li>检查是否误勾了「统计」这类汇总表（会造成重复计账）；</li>
+        <li>检查金额列是否选错（例如选成了「余额」而不是「发生额」）；</li>
+        <li>预览页的错误行数与失败条数会给出原因。</li>
+      </ul>
+      <h3>Q3：导入的历史记录改不了？</h3>
+      <p>说明已经确认冻结（行首橙色竖条）。用「调整」补一笔差额，或说明你导入时选了「立即冻结」——下一批导入改选「先核对再冻结」。</p>
+      <h3>Q4：内部转账是灰的？</h3>
+      <p>只有「总账户」一个账户时不可用。到「设置 → 账户」新增第二个账户即可。</p>
+      <h3>Q5：卸载后我的账本还在吗？</h3>
+      <p>在。卸载默认保留数据目录；重新安装同一版本即可继续使用。要彻底删除需在卸载界面勾选「同时删除用户数据」。</p>
+      <h3>Q6：提示缺少 WebView2 运行时？</h3>
+      <p>Windows 10 1803+ 与 Windows 11 通常自带。若确实缺失，按弹窗提示到微软官网下载「WebView2 Runtime」安装后重试；临时应急可运行同目录的 <code>ledger.exe</code> 用浏览器打开。</p>
+      <h3>Q7：能不能把数据放网盘同步？</h3>
+      <p>不建议直接同步 <code>ledger.db</code>（写入过程中同步可能损坏）。推荐定期「备份」后同步备份文件。</p>
+      <h3>Q8：导入的「其他」和「其它」为什么是两个分类？</h3>
+      <p>为了与原账本严格一致，系统不会自动合并近义分类。可在「设置 → 分类」手动把其中一个的记录改到另一个，再停用多余分类。</p>
+    </section>
+
+    <section id="limits">
+      <h2><span class="no">20</span>已知限制</h2>
+      <table>
+        <thead><tr><th>限制</th><th>说明 / 替代方案</th></tr></thead>
+        <tbody>
+          <tr><td>不支持 <code>.xls</code></td><td>用 Excel/WPS 另存为 <code>.xlsx</code> 或 <code>.csv</code></td></tr>
+          <tr><td>安装包未签名</td><td>首次运行 SmartScreen 提示，点「更多信息 → 仍要运行」</td></tr>
+          <tr><td>单账户下无内部转账</td><td>新增第二个账户后可用</td></tr>
+          <tr><td>待确认行不显示历史余额</td><td>跨冻结边界混合时余额无历史意义，确认后恢复显示</td></tr>
+          <tr><td>OCR 需额外服务</td><td>未启动时该功能不可用，不影响其他功能</td></tr>
+          <tr><td>仅 Windows</td><td>当前提供 Windows 桌面版与浏览器模式</td></tr>
+        </tbody>
+      </table>
+      <p class="muted">本手册随安装包一同分发，位置：安装目录下 <code>使用手册.html</code>；也可从开始菜单「个人记账 v1.2 → 使用手册」打开。</p>
+    </section>
+
+    <footer>个人记账 v1.2 · 使用手册 · 本地数据、离线可用</footer>
+  </main>
+</div>
+
+<script>
+  // 目录高亮：滚动时标记当前章节
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+    var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+    function onScroll() {
+      var y = window.scrollY + 90, cur = 0;
+      for (var i = 0; i < sections.length; i++) {
+        if (sections[i] && sections[i].offsetTop <= y) cur = i;
+      }
+      links.forEach(function (a, i) { a.classList.toggle('active', i === cur); });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
+</script>
+</body>
+</html>

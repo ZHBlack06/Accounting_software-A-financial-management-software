@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>个人记账 安装程序</title>
+<link rel="stylesheet" href="app.css" />
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <div class="logo">账</div>
+    <div class="hero-text">
+      <h1 id="heroTitle">个人记账 <span class="badge" id="heroVersion">v1.0</span></h1>
+      <p class="subtitle" id="heroSubtitle">本地优先的个人记账工具 · 数据全部保存在本机</p>
+    </div>
+  </header>
+
+  <main class="content">
+    <!-- 安装/卸载设置视图 -->
+    <section id="setupView" class="view">
+      <div id="installFields">
+        <label class="field-label" for="dirInput">安装位置</label>
+        <div class="path-row">
+          <input id="dirInput" class="text-input" type="text" spellcheck="false" autocomplete="off" />
+          <button id="browseBtn" class="btn ghost" type="button">浏览…</button>
+        </div>
+        <p id="dirHint" class="hint"></p>
+
+        <div class="options">
+          <label class="opt"><input type="checkbox" id="optDesktop" checked /><span>创建桌面快捷方式</span></label>
+          <label class="opt"><input type="checkbox" id="optStartMenu" checked /><span>创建开始菜单快捷方式</span></label>
+          <label class="opt"><input type="checkbox" id="optLaunch" checked /><span>安装完成后立即启动</span></label>
+        </div>
+
+        <div class="metrics">
+          <div class="metric"><span class="metric-k">需要空间</span><span class="metric-v" id="needSize">—</span></div>
+          <div class="metric"><span class="metric-k">目标磁盘可用</span><span class="metric-v" id="freeSize">—</span></div>
+          <div class="metric"><span class="metric-k">文件数</span><span class="metric-v" id="fileCount">—</span></div>
+        </div>
+        <div class="notice" id="upgradeNotice" hidden></div>
+      </div>
+
+      <div id="uninstallFields" hidden>
+        <div class="un-card">
+          <div class="un-row"><span class="metric-k">安装目录</span><span class="un-path" id="unDir">—</span></div>
+          <div class="un-row"><span class="metric-k">占用空间</span><span class="metric-v" id="unSize">—</span></div>
+          <div class="un-row"><span class="metric-k">数据目录</span><span class="metric-v" id="unData">—</span></div>
+        </div>
+        <label class="opt" id="removeDataWrap"><input type="checkbox" id="optRemoveData" /><span id="removeDataText">同时删除用户数据（账本数据将永久丢失）</span></label>
+        <p id="dirHint2" class="hint"></p>
+      </div>
+    </section>
+
+    <!-- 进度视图 -->
+    <section id="progressView" class="view" hidden>
+      <div class="progress-head">
+        <span id="stageText">正在准备…</span>
+        <span id="pctText" class="pct">0%</span>
+      </div>
+      <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+      <pre class="log" id="logBox"></pre>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-msg" id="footerMsg"></div>
+    <div class="actions">
+      <button id="cancelBtn" class="btn" type="button">取消</button>
+      <button id="primaryBtn" class="btn primary" type="button">安装</button>
+    </div>
+  </footer>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

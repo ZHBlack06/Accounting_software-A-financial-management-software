@@ -1,0 +1,14 @@
+# OCR 服务（Python）忽略项
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+# 模型权重不入库（见 models/README.md）
+models/*.bin
+models/*.gguf
+models/*.safetensors
+models/*.pt
+# 本地生成的测试夹具可重新生成（当前已入库 1 张，保持确定性）
+tests/fixtures/*.tmp

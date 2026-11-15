@@ -1,0 +1,53 @@
+/* 主题变量（ARCHITECTURE §7.6）：亮色/深色双套，图表配色同源 */
+:root {
+  --bg-page: #f5f6f8;
+  --bg-card: #ffffff;
+  --bg-elevated: #ffffff;
+  --text-1: #1f2328;
+  --text-2: #57606a;
+  --text-3: #8b949e;
+  --border-1: #d0d7de;
+  --border-2: #e6eaef;
+  --accent: #0969da;
+  --accent-bg: #ddf4ff;
+  --income: #1a7f37;
+  --expense: #cf222e;
+  --adjust: #8250df;
+  --frozen: #d97706;
+  /* v1.2 R6：「待确认冻结」= 蓝灰（与已冻结的实心橙刻意区分） */
+  --pending: #64748b;
+  --pending-border: #94a3b8;
+  --pending-bg: #f1f5f9;
+  --chart-text: #57606a;
+  --chart-split: #e6eaef;
+  --radius-card: 12px;
+  --shadow-card: 0 1px 3px rgba(31, 35, 40, 0.08);
+}
+
+html.dark {
+  --bg-page: #0d1117;
+  --bg-card: #161b22;
+  --bg-elevated: #1c2128;
+  --text-1: #e6edf3;
+  --text-2: #9198a1;
+  --text-3: #6e7681;
+  --border-1: #30363d;
+  --border-2: #21262d;
+  --accent: #2f81f7;
+  --accent-bg: #12263f;
+  --income: #3fb950;
+  --expense: #f85149;
+  --adjust: #a371f7;
+  --frozen: #d29922;
+  --pending: #94a3b8;
+  --pending-border: #64748b;
+  --pending-bg: #1e293b;
+  --chart-text: #9198a1;
+  --chart-split: #21262d;
+  --shadow-card: 0 1px 3px rgba(1, 4, 9, 0.6);
+}
+
+body {
+  background: var(--bg-page);
+  color: var(--text-1);
+}

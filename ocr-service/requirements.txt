@@ -1,0 +1,10 @@
+# OCR 服务依赖（固定版本，与实际验证环境一致：Python 3.13）
+# 无 torch/transformers —— 真实模型通过 httpx 调用外部 Ollama / vLLM / LM Studio 端点。
+fastapi==0.162.2
+uvicorn[standard]==0.54.0
+pydantic==2.14.3
+httpx==0.28.1
+pillow==13.0.0
+python-multipart==0.0.33
+# 以下仅测试使用（生产镜像可不装）
+pytest==9.2.0

@@ -1,0 +1,36 @@
+name: build
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: 前端构建
+        working-directory: web
+        run: |
+          npm ci
+          npm run build
+
+      - name: 后端测试
+        run: go test ./... -count=1
+
+      - name: 后端构建
+        run: |
+          go build -trimpath -o ledger.exe ./cmd/server
+          go build -trimpath -ldflags "-H windowsgui -s -w" -o ledger-desktop.exe ./cmd/desktop

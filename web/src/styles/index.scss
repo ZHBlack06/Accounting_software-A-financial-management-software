@@ -1,0 +1,150 @@
+/* 全局 reset + Element Plus 变量双向映射（ARCHITECTURE §7.6） */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-size: 14px;
+  color: var(--text-1);
+  background: var(--bg-page);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Element Plus 变量 → 自有变量（双向映射，保证图表与组件同源） */
+:root {
+  --el-bg-color: var(--bg-card);
+  --el-bg-color-page: var(--bg-page);
+  --el-bg-color-overlay: var(--bg-elevated);
+  --el-text-color-primary: var(--text-1);
+  --el-text-color-regular: var(--text-2);
+  --el-text-color-secondary: var(--text-3);
+  --el-border-color: var(--border-1);
+  --el-border-color-light: var(--border-2);
+  --el-border-color-lighter: var(--border-2);
+  --el-border-color-extra-light: var(--border-2);
+  --el-fill-color: var(--bg-page);
+  --el-fill-color-light: var(--bg-page);
+  --el-fill-color-lighter: var(--bg-page);
+  --el-color-primary: var(--accent);
+}
+
+html.dark {
+  --el-bg-color: var(--bg-card);
+  --el-bg-color-page: var(--bg-page);
+  --el-bg-color-overlay: var(--bg-elevated);
+  --el-text-color-primary: var(--text-1);
+  --el-text-color-regular: var(--text-2);
+  --el-border-color: var(--border-1);
+  --el-border-color-light: var(--border-2);
+  --el-fill-color: var(--bg-elevated);
+  --el-fill-color-light: var(--bg-elevated);
+  --el-color-primary: var(--accent);
+}
+
+/* 通用卡片 */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 16px;
+}
+
+/* 金额语义色（中国习惯：支出红、收入绿） */
+.amount-expense {
+  color: var(--expense);
+}
+
+.amount-income {
+  color: var(--income);
+}
+
+.amount-transfer {
+  color: var(--text-3);
+}
+
+.amount-adjust {
+  color: var(--adjust);
+}
+
+/* 冻结区行：左侧 3px 橙条 */
+.row-frozen {
+  box-shadow: inset 3px 0 0 var(--frozen);
+}
+
+/* 表格字号约定（PRD 4.8） */
+.el-table {
+  font-size: 13px;
+  --el-table-bg-color: var(--bg-card);
+  --el-table-tr-bg-color: var(--bg-card);
+  --el-table-header-bg-color: var(--bg-page);
+  --el-table-border-color: var(--border-2);
+  --el-table-text-color: var(--text-2);
+  --el-table-header-text-color: var(--text-1);
+}
+
+/* 图表容器必须有明确宽高 */
+.chart {
+  width: 100%;
+  height: 320px;
+}
+
+/* 图表卡片头部（charts/* 共用） */
+.chart-card {
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+  }
+
+  &__tools {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.text-secondary {
+  color: var(--text-2);
+}
+
+.text-tertiary {
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+/* ---------- v1.2 T08：宽弹窗与表格溢出兜底 ---------- */
+
+/* 宽弹窗（完整表单 / 编辑交易）：收窄内边距换取表格可用宽度 */
+.dlg--wide {
+  .el-dialog__body {
+    padding: 16px 20px;
+  }
+}
+
+/*
+ * 兜底：el-form-item__content 是 flex 子项，默认 min-width:auto 会被宽子元素撑开，
+ * 导致表格顶出弹窗（而不是在内部滚动）。组件内已用 :deep() 局部修复，这里再全局兜一层。
+ */
+.el-form-item__content {
+  min-width: 0;
+}
